@@ -1,13 +1,38 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const Home: React.FC = () => {
+interface NavButtonProps {
+  value: number;
+  label: string;
+}
+
+const NavButton: React.FC<NavButtonProps> = ({ value, label }) => {
   const navigate = useNavigate();
 
-  const goToApp = () => {
-    navigate("/app");
+  const handleClick = () => {
+    navigate("/app", { state: { value } });
   };
 
+  return (
+    <button
+      onClick={handleClick}
+      style={{
+        padding: "20px 40px",
+        fontSize: "1.5rem",
+        borderRadius: "12px",
+        border: "none",
+        cursor: "pointer",
+        backgroundColor: "#4CAF50",
+        color: "white",
+        margin: "0 10px",
+      }}
+    >
+      {label}
+    </button>
+  );
+};
+
+const Home: React.FC = () => {
   return (
     <div
       style={{
@@ -18,20 +43,10 @@ const Home: React.FC = () => {
         backgroundColor: "#f2f2f2",
       }}
     >
-      <button
-        onClick={goToApp}
-        style={{
-          padding: "20px 40px",
-          fontSize: "1.5rem",
-          borderRadius: "12px",
-          border: "none",
-          cursor: "pointer",
-          backgroundColor: "#4CAF50",
-          color: "white",
-        }}
-      >
-        Entrer dans l'application
-      </button>
+      {/* Plusieurs boutons avec des valeurs différentes */}
+      <NavButton value={1} label="Valeur 1" />
+      <NavButton value={2} label="Valeur 2" />
+      <NavButton value={3} label="Valeur 3" />
     </div>
   );
 };

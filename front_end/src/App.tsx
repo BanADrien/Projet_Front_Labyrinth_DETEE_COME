@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 interface Level {
   id: number;
@@ -20,29 +21,30 @@ interface Level {
 
 // 🎨 Fonction qui retourne la couleur selon le symbole
 function getCellColor(cell: string) {
-  if (cell === "W") {
-    return "#444";
-  } else if (cell === "S") {
-    return "lightgreen";
-  } else if (cell === "E") {
-    return "tomato";
-  } else {
-    return "white";
-  }
+  if (cell === "W") return "#444";
+  if (cell === "S") return "lightgreen";
+  if (cell === "E") return "tomato";
+  if (cell === "M") return "🟢";
+  return "white";
 }
 
 function App() {
+  const location = useLocation();
+  const value = location.state?.value ?? 1; // valeur reçue du bouton, défaut 1
   const [level, setLevel] = useState<Level | null>(null);
 
-  // 🔥 Charge le niveau depuis le back
   useEffect(() => {
     async function loadLevel() {
-      const response = await fetch("http://localhost:4000/api/levels/1");
-      const json: Level = await response.json();
-      setLevel(json);
+      try {
+        const response = await fetch(`http://localhost:4000/api/levels/${value}`);
+        const json: Level = await response.json();
+        setLevel(json);
+      } catch (error) {
+        console.error("Erreur lors du chargement du niveau :", error);
+      }
     }
     loadLevel();
-  }, []);
+  }, [value]); // ⚡ dépendance sur value pour recharger si elle change
 
   if (!level) return <p>Chargement du niveau...</p>;
 
@@ -52,7 +54,6 @@ function App() {
       <p>{level.description}</p>
 
       <h2>Grille :</h2>
-      
       <div
         style={{
           display: "grid",
@@ -71,7 +72,7 @@ function App() {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                background: getCellColor(cell), // <-- IF/ELSE appliqué ici
+                background: getCellColor(cell),
               }}
             >
               {cell}
