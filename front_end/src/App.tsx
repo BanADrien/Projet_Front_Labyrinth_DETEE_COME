@@ -24,7 +24,6 @@ function getCellColor(cell: string) {
   if (cell === "W") return "#444";
   if (cell === "S") return "lightgreen";
   if (cell === "E") return "tomato";
-  if (cell === "M") return "🟢";
   return "white";
 }
 
