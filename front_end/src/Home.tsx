@@ -44,9 +44,10 @@ const Home: React.FC = () => {
       }}
     >
       {/* Plusieurs boutons avec des valeurs différentes */}
-      <NavButton value={1} label="Valeur 1" />
-      <NavButton value={2} label="Valeur 2" />
-      <NavButton value={3} label="Valeur 3" />
+      <NavButton value={1} label="Labyrinthe 1" />
+      <NavButton value={2} label="Labyrinthe 2" />
+      <NavButton value={3} label="Labyrinthe 3" />
+      <NavButton value={4} label="Labyrinthe 4" />
     </div>
   );
 };
