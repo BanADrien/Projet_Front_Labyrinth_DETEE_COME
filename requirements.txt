@@ -1,0 +1,4 @@
+Node >= 18
+npm >= 9
+React
+React DOM
