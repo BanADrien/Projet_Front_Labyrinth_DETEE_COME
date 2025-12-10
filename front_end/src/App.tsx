@@ -30,6 +30,8 @@ function getCellColor(cell: string) {
 function App() {
   const location = useLocation();
   const value = location.state?.value ?? 1; // valeur reçue du bouton, défaut 1
+  const navPseudo = location.state?.pseudo as string | undefined;
+  const [pseudo, setPseudo] = useState<string | null>(null);
   const [level, setLevel] = useState<Level | null>(null);
 
   useEffect(() => {
@@ -45,34 +47,35 @@ function App() {
     loadLevel();
   }, [value]); // ⚡ dépendance sur value pour recharger si elle change
 
-  if (!level) return <p>Chargement du niveau...</p>;
+  useEffect(() => {
+    if (navPseudo) {
+      setPseudo(navPseudo);
+      localStorage.setItem("pseudo", navPseudo);
+    } else {
+      const stored = localStorage.getItem("pseudo");
+      if (stored) setPseudo(stored);
+    }
+  }, [navPseudo]);
+
+  if (!level) return <p className="muted">Chargement du niveau...</p>;
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div className="app-root">
+      {pseudo && <p className="greeting">Bonjour, {pseudo} — bonne partie !</p>}
       <h1>Niveau : {level.name}</h1>
-      <p>{level.description}</p>
+      <p className="muted">{level.description}</p>
 
       <h2>Grille :</h2>
       <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${level.cols}, 40px)`,
-          gap: "4px",
-        }}
+        className="grid-wrap"
+        style={{ gridTemplateColumns: `repeat(${level.cols}, 40px)` }}
       >
         {level.grid.map((row, rowIndex) =>
           row.map((cell, colIndex) => (
             <div
               key={`${rowIndex}-${colIndex}`}
-              style={{
-                width: "40px",
-                height: "40px",
-                border: "1px solid #333",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                background: getCellColor(cell),
-              }}
+              className="cell"
+              style={{ background: getCellColor(cell) }}
             >
               {cell}
             </div>
