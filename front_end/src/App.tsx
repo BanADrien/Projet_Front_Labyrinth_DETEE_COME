@@ -29,7 +29,7 @@ function getCellColor(cell: string) {
 
 function App() {
   const location = useLocation();
-  const value = location.state?.value ?? 1; // valeur reçue du bouton, défaut 1
+  const value = location.state?.value ?? 1; // valeur reçue  du bouton, défaut 1
   const navPseudo = location.state?.pseudo as string | undefined;
   const [pseudo, setPseudo] = useState<string | null>(null);
   const [level, setLevel] = useState<Level | null>(null);
@@ -61,7 +61,7 @@ function App() {
 
   return (
     <div className="app-root">
-      {pseudo && <p className="greeting">Bonjour, {pseudo} — bonne partie !</p>}
+      {pseudo && <p className="greeting">Bonjour  , {pseudo} — bonne partie !</p>}
       <h1>Niveau : {level.name}</h1>
       <p className="muted">{level.description}</p>
 
