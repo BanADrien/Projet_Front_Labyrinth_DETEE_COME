@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 
 interface Level {
   id: number;
-  name: string;
+  name: string; 
   description: string;
   rows: number;
   cols: number;
