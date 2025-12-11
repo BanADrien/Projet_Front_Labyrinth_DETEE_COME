@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import GameGrid from "./GameGrid";
 import GameHUD from "./GameHUD";
 import type { Level, GameState } from "./gameLogic";
@@ -7,6 +7,7 @@ import { initializeGame, handleCellClick } from "./gameLogic";
 
 function App() {
   const location = useLocation();
+  const navigate = useNavigate();
   const levelId = location.state?.value ?? 1;
   const [level, setLevel] = useState<Level | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
@@ -38,13 +39,33 @@ function App() {
     }
   };
 
+  const handleNextLevel = () => {
+    if (!gameState?.won) return;
+    const next = levelId + 1;
+    if (next <= 4) {
+      navigate("/app", { state: { value: next } });
+    } else {
+      navigate("/");
+    }
+  };
+
+  const handleBackToMenu = () => {
+    navigate("/");
+  };
+
   if (!level || !gameState) {
     return <div style={{ textAlign: "center", marginTop: "50px" }}>Chargement...</div>;
   }
 
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-      <GameHUD level={level} gameState={gameState} onReset={handleReset} />
+      <GameHUD
+        level={level}
+        gameState={gameState}
+        onReset={handleReset}
+        onNextLevel={handleNextLevel}
+        onBackToMenu={handleBackToMenu}
+      />
       <div style={{ display: "flex", justifyContent: "center" }}>
         <GameGrid level={level} gameState={gameState} onCellClick={handleCellClickWrapper} />
       </div>
