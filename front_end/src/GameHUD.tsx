@@ -1,5 +1,6 @@
 import React from "react";
 import type { Level, GameState } from "./gameLogic";
+import Inventory from "./Inventory";
 
 interface GameHUDProps {
   level: Level;
@@ -11,35 +12,24 @@ interface GameHUDProps {
 
 const GameHUD: React.FC<GameHUDProps> = ({ level, gameState, onReset, onNextLevel, onBackToMenu }) => {
   return (
-    <div style={{ marginBottom: "20px", textAlign: "center", color: "#333" }}>
-      <h1>{level.name}</h1>
-      <p>{level.description}</p>
+    <div style={{ marginBottom: "20px", textAlign: "center" }}>
+      <h1 className="game-title">{level.name}</h1>
+      <p className="game-description">{level.description}</p>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          marginTop: "20px",
-          padding: "10px",
-          backgroundColor: "#eee",
-          borderRadius: "8px",
-          maxWidth: "600px",
-          margin: "20px auto",
-        }}
-      >
-        <div>
-          <strong>Coups:</strong> {gameState.moves}
+      <div className="game-stats">
+        <div className="stat-item">
+          <span className="stat-label">Coups:</span> <span className="stat-value">{gameState.moves}</span>
         </div>
-        <div>
-          <strong>Position:</strong> ({gameState.playerPos.row}, {gameState.playerPos.col})
+        <div className="stat-item">
+          <span className="stat-label">Position:</span> <span className="stat-value">({gameState.playerPos.row}, {gameState.playerPos.col})</span>
         </div>
-        <div>
-          <strong>Révélées:</strong> {gameState.revealedCells.size}
+        <div className="stat-item">
+          <span className="stat-label">Révélées:</span> <span className="stat-value">{gameState.revealedCells.size}</span>
         </div>
       </div>
 
       {gameState.won && (
-        <div style={{ fontSize: "1.5rem", color: "green", marginTop: "20px" }}>
+        <div className="victory-message">
           🎉 Victoire en {gameState.moves} coups!
           <div style={{ marginTop: "12px", display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
             <button
@@ -89,7 +79,7 @@ const GameHUD: React.FC<GameHUDProps> = ({ level, gameState, onReset, onNextLeve
       )}
 
       {gameState.gameOver && !gameState.won && (
-        <div style={{ fontSize: "1.5rem", color: "red", marginTop: "20px" }}>
+        <div className="gameover-message">
           ❌ Jeu terminé
         </div>
       )}

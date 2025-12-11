@@ -58,7 +58,7 @@ function App() {
   }
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
+    <div style={{ padding: "20px", maxWidth: "900px", margin: "0 auto" }}>
       <GameHUD
         level={level}
         gameState={gameState}
@@ -66,8 +66,10 @@ function App() {
         onNextLevel={handleNextLevel}
         onBackToMenu={handleBackToMenu}
       />
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <div className="game-stage">
+        <div style={{ display: "flex", justifyContent: "center" }}>
         <GameGrid level={level} gameState={gameState} onCellClick={handleCellClickWrapper} />
+        </div>
       </div>
     </div>
   );

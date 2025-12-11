@@ -58,7 +58,7 @@ const Home: React.FC = () => {
       {storedPseudo && (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
           <div style={{ textAlign: "center" }}>
-            <h2 style={{ margin: 0 }}>Bonjour, {storedPseudo} !</h2>
+            <h2 className="greeting-title" style={{ margin: 0 }}>Bonjour, {storedPseudo} !</h2>
             <button onClick={clearPseudo} className="btn btn-ghost" style={{ marginTop: 8 }}>
               Changer de pseudo
             </button>
@@ -66,16 +66,16 @@ const Home: React.FC = () => {
 
           <div className="nav-buttons">
             <button onClick={() => handleStart(1)} className="btn btn-primary">
-              Labyrinthe 1
+              Chasse au trésor 1
             </button>
             <button onClick={() => handleStart(2)} className="btn btn-primary">
-              Labyrinthe 2
+              Chasse au trésor 2
             </button>
             <button onClick={() => handleStart(3)} className="btn btn-primary">
-              Labyrinthe 3
+              Chasse au trésor 3
             </button>
             <button onClick={() => handleStart(4)} className="btn btn-primary">
-              Labyrinthe 4
+              Chasse au trésor 4
             </button>
           </div>
         </div>

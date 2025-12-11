@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Pirata+One&display=swap');
+
 :root{
   --bg:#0f1724;
   --card:#0f1724;
@@ -15,8 +17,8 @@ html,body,#root{height:100%}
 body{
   margin:0;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: linear-gradient(180deg,#071025 0%, #081730 60%);
-  color:#e6eef8;
+  background: url("./assets/fond.png") center/cover fixed;
+  color:#3d2817;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
 }
@@ -60,28 +62,54 @@ body{
 .prompt-actions{display:flex;gap:8px;justify-content:center;margin-top:8px}
 
 .btn{
-  padding:10px 16px;
-  border-radius:10px;
-  border:none;
+  padding:12px 18px;
+  border-radius:12px;
+  border:1px solid rgba(0,0,0,0.28);
   cursor:pointer;
-  font-weight:600;
+  font-weight:700;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
 }
 .btn:active{transform:translateY(1px)}
 .btn-primary{
-  background:linear-gradient(90deg,var(--accent),#5b21b6);
-  color:white;
-  box-shadow: 0 8px 24px rgba(124,58,237,0.18);
+  background: linear-gradient(135deg,#f2cf73,#d19a34);
+  color:#2b1a09;
+  border:1px solid #8a5c17;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.35);
 }
 .btn-ghost{
-  background:transparent;
-  color:var(--muted);
-  border:1px solid rgba(255,255,255,0.04);
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+  color:#f5e1b8;
+  border:1px dashed rgba(255,255,255,0.4);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.25);
 }
 
 .nav-buttons{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
 .nav-buttons .btn{padding:14px 28px;font-size:1.05rem}
 
 .greeting{color:var(--muted);margin-bottom:8px}
+.greeting-title{
+  font-family: 'Cinzel Decorative', 'Pirata One', serif;
+  letter-spacing: 0.12em;
+  font-size: 2.2rem;
+  text-shadow:
+    0 0 6px rgba(0,0,0,0.75),
+    0 2px 10px rgba(0,0,0,0.6),
+    0 0 1px rgba(0,0,0,0.9);
+  color: #f5e1b8;
+}
+
+.game-stage{
+  margin-top: 12px;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
 /* Grid */
 .grid-wrap{display:inline-grid;gap:6px}
@@ -90,9 +118,212 @@ body{
   display:flex;align-items:center;justify-content:center;font-weight:700;color:#0b1520
 }
 
+/* Labyrinth grid */
+.grid-frame{
+  padding:16px;
+  background: rgba(212,165,116,0.9);
+  border:3px solid #6b4423;
+  border-radius:0;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.cell{
+  border-radius:0;
+  border:0;
+  box-shadow: var(--cell-shadow, none);
+  background:#2c3446;
+  color:#e8eef5;
+  font-size:1.25rem;
+  transition:transform 120ms ease, box-shadow 160ms ease, opacity 120ms ease, border-color 120ms ease;
+}
+
+.cell-adjacent{
+  box-shadow: var(--cell-shadow, none);
+}
+
+.cell-disabled{opacity:0.45;cursor:not-allowed;}
+
+.cell-path,
+.cell-start,
+.cell-exit,
+.cell-wall {
+  opacity: 1 !important;
+}
+
+.cell-wall{
+  background: #4b5563 url("./assets/chemins/mur.png") center/cover no-repeat;
+  border:0;
+}
+
+.cell-wall.wall-edge-top{border-top:2px solid #374151;}
+.cell-wall.wall-edge-bottom{border-bottom:2px solid #374151;}
+.cell-wall.wall-edge-left{border-left:2px solid #374151;}
+.cell-wall.wall-edge-right{border-right:2px solid #374151;}
+
+.cell-path{
+  background-color: #a88e68;
+  background-image: none;
+  color:#2d1b0f;
+  border:0;
+}
+
+.cell-fog{
+  background: repeating-linear-gradient(135deg, #131c2e, #131c2e 6px, #0f192c 6px, #0f192c 12px);
+  color:#5b6474;
+  border-radius:10px;
+  border:1px solid #1b2740;
+  box-shadow: var(--cell-shadow, inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 12px rgba(0,0,0,0.55));
+}
+
+.cell-start{
+  background: linear-gradient(135deg,#34d399,#059669);
+  color:#032014;
+  border:0;
+}
+
+.cell-exit{
+  background: linear-gradient(135deg,#f87171,#b91c1c);
+  color:#2e0000;
+  border:0;
+}
+
+.cell-player{
+  border:0;
+  color:#e8eef5;
+}
+
+.cell-key{
+  background: linear-gradient(135deg,#fcd34d,#f59e0b);
+  color:#3b2500;
+  border:0;
+}
+
+.cell-door{
+  background: linear-gradient(135deg,#94a3b8,#475569);
+  color:#0b0f1a;
+  border:0;
+}
+
+.cell-monster{
+  background: linear-gradient(135deg,#ef4444,#7f1d1d);
+  color:#ffe4e6;
+  border:0;
+}
+
 @media (max-width:520px){
   .nav-buttons .btn{padding:10px 18px;font-size:0.95rem}
   .prompt-card{min-width:260px}
+}
+
+/* Game HUD Styling */
+.game-title {
+  font-family: 'Cinzel Decorative', 'Pirata One', serif;
+  font-size: 2.5rem;
+  letter-spacing: 0.12em;
+  text-shadow:
+    0 0 10px rgba(0,0,0,0.8),
+    0 4px 16px rgba(0,0,0,0.7),
+    0 0 2px rgba(0,0,0,1);
+  color: #f5e1b8;
+  margin: 0 0 8px 0;
+}
+
+.game-description {
+  font-family: 'Pirata One', serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 0 8px rgba(0,0,0,0.7),
+    0 2px 8px rgba(0,0,0,0.6);
+  color: #e8d5c4;
+  margin: 0;
+}
+
+.game-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding: 16px 24px;
+  background: rgba(0,0,0,0.55);
+  border: 2px solid #d4a574;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 20px auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.stat-item {
+  font-family: 'Pirata One', serif;
+  font-size: 1.15rem;
+  text-align: center;
+}
+
+.stat-label {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 0 10px rgba(0,0,0,0.95),
+    0 0 20px rgba(0,0,0,0.9),
+    0 2px 8px rgba(0,0,0,1);
+  color: #f5d76e;
+  display: block;
+  font-weight: bold;
+}
+
+.stat-value {
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-shadow:
+    0 0 10px rgba(0,0,0,0.95),
+    0 0 20px rgba(0,0,0,0.9),
+    0 2px 8px rgba(0,0,0,1);
+  color: #ffd700;
+  display: block;
+}
+
+.victory-message {
+  font-size: 2.2rem;
+  font-family: 'Cinzel Decorative', serif;
+  letter-spacing: 0.1em;
+  font-weight: bold;
+  color: #fcd34d;
+  text-shadow:
+    0 0 20px rgba(0,0,0,0.9),
+    0 0 40px rgba(0,0,0,0.85),
+    0 4px 10px rgba(0,0,0,0.95),
+    0 0 60px rgba(0,0,0,0.8);
+  margin-top: 20px;
+  animation: pulse-glow 2s ease-in-out infinite;
+  padding: 16px 32px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 12px;
+  border: 2px solid #d4a574;
+}
+
+.gameover-message {
+  font-size: 2.2rem;
+  font-family: 'Cinzel Decorative', serif;
+  letter-spacing: 0.1em;
+  font-weight: bold;
+  color: #f87171;
+  text-shadow:
+    0 0 20px rgba(0,0,0,0.9),
+    0 0 40px rgba(0,0,0,0.85),
+    0 4px 10px rgba(0,0,0,0.95),
+    0 0 60px rgba(0,0,0,0.8);
+  margin-top: 20px;
+  animation: pulse-glow 1.5s ease-in-out infinite;
+  padding: 16px 32px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 12px;
+  border: 2px solid #d4a574;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 15px rgba(252, 211, 77, 0.6)); }
+  50% { opacity: 0.95; filter: drop-shadow(0 0 25px rgba(252, 211, 77, 0.8)); }
 }
 
 /* small helpers */
