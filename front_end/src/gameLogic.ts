@@ -341,3 +341,4 @@ export const getCellDisplay = (
   if (cell.startsWith("O:") && clearedObstacles.includes(cellKey)) return "";
   return "";
 };
+ 
