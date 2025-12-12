@@ -30,19 +30,7 @@ const GameGrid: React.FC<GameGridProps> = ({ level, gameState, onCellClick }) =>
     return adjacent;
   };
 
-  const getPathShadow = (row: number, col: number) => {
-    const isWall = (r: number, c: number) => level.grid[r][c] === "W";
-    const shadows: string[] = [];
-
-    if (row > 0 && isWall(row - 1, col)) shadows.push("inset 0 6px 10px -6px rgba(0,0,0,0.55)");
-    if (row < level.rows - 1 && isWall(row + 1, col)) shadows.push("inset 0 -6px 10px -6px rgba(0,0,0,0.55)");
-    if (col > 0 && isWall(row, col - 1)) shadows.push("inset 6px 0 10px -6px rgba(0,0,0,0.55)");
-    if (col < level.cols - 1 && isWall(row, col + 1)) shadows.push("inset -6px 0 10px -6px rgba(0,0,0,0.55)");
-
-    return shadows.join(", ");
-  };
-  const isPath = (r: number, c: number) => level.grid[r][c] === "C";
-
+  
   const getPathTextureAndRotation = (row: number, col: number) => {
     const cellKey = `${row}-${col}`;
     const textureData = gameState.pathTextures.get(cellKey);
@@ -108,7 +96,6 @@ const GameGrid: React.FC<GameGridProps> = ({ level, gameState, onCellClick }) =>
           const isPlayer = cellKey === playerKey;
           const kind = resolveKind(rowIndex, colIndex, isRevealed, isPlayer);
           const wallEdges = kind === "wall" ? getWallEdges(rowIndex, colIndex) : [];
-          const pathShadow = kind !== "wall" ? getPathShadow(rowIndex, colIndex) : "";
           
           // Texture basée sur la vraie cellule, pas affectée par le joueur
           const cellContent = level.grid[rowIndex][colIndex];
@@ -144,7 +131,6 @@ const GameGrid: React.FC<GameGridProps> = ({ level, gameState, onCellClick }) =>
                   backgroundRepeat: "no-repeat",
                   transform: `rotate(${pathTexture.rotation}deg)`,
                 } as React.CSSProperties) : {}),
-                ...(pathShadow ? ({ ["--cell-shadow"]: pathShadow } as React.CSSProperties) : {}),
               }}
             >
               <span style={{ transform: (pathTexture && pathTexture.image) ? `rotate(${-pathTexture.rotation}deg)` : 'none', display: 'inline-block' }}>

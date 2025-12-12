@@ -2,15 +2,33 @@ import React from "react";
 import type { Level, GameState } from "./gameLogic";
 import Inventory from "./Inventory";
 
+type ScoreEntry = {
+  pseudo: string;
+  level: number;
+  moves: number;
+  timeSeconds: number;
+  score: number;
+  timestamp: number;
+};
+
 interface GameHUDProps {
   level: Level;
   gameState: GameState;
+  elapsedSeconds: number;
+  score: number;
+  bestScore: ScoreEntry | null;
   onReset: () => void;
   onNextLevel: () => void;
   onBackToMenu: () => void;
 }
 
-const GameHUD: React.FC<GameHUDProps> = ({ level, gameState, onReset, onNextLevel, onBackToMenu }) => {
+const formatTime = (totalSeconds: number) => {
+  const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+  const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${seconds}`;
+};
+
+const GameHUD: React.FC<GameHUDProps> = ({ level, gameState, elapsedSeconds, score, bestScore, onReset, onNextLevel, onBackToMenu }) => {
   return (
     <div style={{ marginBottom: "20px", textAlign: "center" }}>
       <h1 className="game-title">{level.name}</h1>
@@ -26,55 +44,36 @@ const GameHUD: React.FC<GameHUDProps> = ({ level, gameState, onReset, onNextLeve
         <div className="stat-item">
           <span className="stat-label">Révélées:</span> <span className="stat-value">{gameState.revealedCells.size}</span>
         </div>
+        <div className="stat-item">
+          <span className="stat-label">Temps:</span> <span className="stat-value">{formatTime(elapsedSeconds)}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-label">Score:</span> <span className="stat-value">{score}</span>
+        </div>
+        {bestScore && (
+          <div className="stat-item">
+            <span className="stat-label">Meilleur:</span>
+            <span className="stat-value">
+              {bestScore.score} ({formatTime(bestScore.timeSeconds)}, {bestScore.moves} coups)
+            </span>
+          </div>
+        )}
       </div>
 
       <Inventory inventory={gameState.inventory} />
 
       {gameState.won && (
         <div className="victory-message">
-          🎉 Victoire en {gameState.moves} coups!
-          <div style={{ marginTop: "12px", display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
-            <button
-              onClick={onBackToMenu}
-              style={{
-                padding: "10px 18px",
-                fontSize: "1rem",
-                backgroundColor: "#666",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
-            >
-              Menu principal
+          🎉 Victoire en {gameState.moves} coups et {formatTime(elapsedSeconds)} — Score {score}
+          <div className="game-buttons-row">
+            <button onClick={onBackToMenu} className="game-btn game-btn-menu">
+              🏠 Menu
             </button>
-            <button
-              onClick={onNextLevel}
-              style={{
-                padding: "10px 18px",
-                fontSize: "1rem",
-                backgroundColor: "#2196F3",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
-            >
-              Niveau suivant ➡️
+            <button onClick={onNextLevel} className="game-btn game-btn-next">
+              ➡️ Suivant
             </button>
-            <button
-              onClick={onReset}
-              style={{
-                padding: "10px 18px",
-                fontSize: "1rem",
-                backgroundColor: "#4CAF50",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
-            >
-              Recommencer
+            <button onClick={onReset} className="game-btn game-btn-restart">
+              🔄 Rejouer
             </button>
           </div>
         </div>
@@ -87,34 +86,12 @@ const GameHUD: React.FC<GameHUDProps> = ({ level, gameState, onReset, onNextLeve
       )}
 
       {!gameState.won && (
-        <div style={{ marginTop: "20px", display: "flex", gap: "10px", justifyContent: "center" }}>
-          <button
-            onClick={onReset}
-            style={{
-              padding: "10px 18px",
-              fontSize: "1rem",
-              backgroundColor: "#4CAF50",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-            }}
-          >
-            Recommencer
+        <div className="game-buttons-row">
+          <button onClick={onReset} className="game-btn game-btn-restart">
+            🔄 Recommencer
           </button>
-          <button
-            onClick={onBackToMenu}
-            style={{
-              padding: "10px 18px",
-              fontSize: "1rem",
-              backgroundColor: "#555",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-            }}
-          >
-            Menu principal
+          <button onClick={onBackToMenu} className="game-btn game-btn-menu">
+            🏠 Menu
           </button>
         </div>
       )}

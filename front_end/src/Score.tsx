@@ -5,6 +5,8 @@ interface ScoreEntry {
   pseudo: string;
   level: number;
   moves: number;
+  timeSeconds: number;
+  score: number;
   timestamp: number;
 }
 
@@ -12,16 +14,35 @@ const Score: React.FC = () => {
   const [scores, setScores] = useState<ScoreEntry[]>([]);
   const navigate = useNavigate();
 
+  const computeScore = (moves: number, seconds: number) => Math.max(0, 5000 - moves * 25 - seconds * 2);
+
+  const formatTime = (totalSeconds: number) => {
+    const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+    const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  };
+
   useEffect(() => {
     const savedScores = localStorage.getItem("scores");
     if (savedScores) {
       const parsed = JSON.parse(savedScores);
-      // Trier par nombre de coups (croissant) puis par niveau
-      parsed.sort((a: ScoreEntry, b: ScoreEntry) => {
-        if (a.level !== b.level) return a.level - b.level;
-        return a.moves - b.moves;
+      const normalized = parsed.map((raw: any) => ({
+        pseudo: raw.pseudo || "Anonyme",
+        level: raw.level || 1,
+        moves: raw.moves || 0,
+        timeSeconds: raw.timeSeconds || 0,
+        score: raw.score !== undefined ? raw.score : computeScore(raw.moves || 0, raw.timeSeconds || 0),
+        timestamp: raw.timestamp || Date.now(),
+      })) as ScoreEntry[];
+
+      // Trier par score décroissant, puis par coups asc, temps asc, niveau asc
+      normalized.sort((a: ScoreEntry, b: ScoreEntry) => {
+        if (a.score !== b.score) return b.score - a.score;
+        if (a.moves !== b.moves) return a.moves - b.moves;
+        if (a.timeSeconds !== b.timeSeconds) return a.timeSeconds - b.timeSeconds;
+        return a.level - b.level;
       });
-      setScores(parsed);
+      setScores(normalized);
     }
   }, []);
 
@@ -83,8 +104,10 @@ const Score: React.FC = () => {
               <thead>
                 <tr style={{ backgroundColor: "#4CAF50", color: "white" }}>
                   <th style={{ padding: "12px", textAlign: "left" }}>Pseudo</th>
+                  <th style={{ padding: "12px", textAlign: "center" }}>Score</th>
                   <th style={{ padding: "12px", textAlign: "center" }}>Niveau</th>
                   <th style={{ padding: "12px", textAlign: "center" }}>Coups</th>
+                  <th style={{ padding: "12px", textAlign: "center" }}>Temps</th>
                   <th style={{ padding: "12px", textAlign: "left" }}>Date</th>
                 </tr>
               </thead>
@@ -98,11 +121,17 @@ const Score: React.FC = () => {
                     }}
                   >
                     <td style={{ padding: "12px", color: "#333" }}>{score.pseudo}</td>
+                    <td style={{ padding: "12px", textAlign: "center", fontWeight: "bold", color: "#333" }}>
+                      {score.score}
+                    </td>
                     <td style={{ padding: "12px", textAlign: "center", color: "#333" }}>
                       Labyrinthe {score.level}
                     </td>
                     <td style={{ padding: "12px", textAlign: "center", fontWeight: "bold", color: "#333" }}>
                       {score.moves}
+                    </td>
+                    <td style={{ padding: "12px", textAlign: "center", color: "#333" }}>
+                      {formatTime(score.timeSeconds)}
                     </td>
                     <td style={{ padding: "12px", color: "#333" }}>
                       {new Date(score.timestamp).toLocaleDateString("fr-FR", {
