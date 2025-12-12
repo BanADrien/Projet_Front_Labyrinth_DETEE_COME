@@ -8,6 +8,7 @@ export interface GameState {
   inventory: { [key: string]: number };
   defeatedEnemies: string[];
   clearedObstacles: string[];
+  collectedItems: string[];
 }
 
 export interface Level {
@@ -32,7 +33,15 @@ const calculatePathTextures = (level: Level): Map<string, { image: string; rotat
   const textures = new Map<string, { image: string; rotation: number }>();
   const isPath = (r: number, c: number) => {
     const cell = level.grid[r][c];
-    return cell === "C" || cell === "S" || cell === "E"; // Considérer aussi start et exit comme chemins
+    // Considérer chemins, start, exit, ET monstres/obstacles/items comme des chemins pour la texture
+    return cell === "C" || 
+           cell === "S" || 
+           cell === "E" || 
+           cell.startsWith("M:") ||
+           cell.startsWith("O:") ||
+           cell.startsWith("I:") ||
+           cell.startsWith("K:") ||
+           cell.startsWith("D:");
   };
 
   for (let row = 0; row < level.rows; row++) {
@@ -46,23 +55,12 @@ const calculatePathTextures = (level: Level): Map<string, { image: string; rotat
         right: col < level.cols - 1 && isPath(row, col + 1),
       };
 
-      const blocked = {
-        top: row === 0,
-        bottom: row === level.rows - 1,
-        left: col === 0,
-        right: col === level.cols - 1,
-      };
-
       const revealedCount = Object.values(connections).filter(Boolean).length;
-      const blockedCount = Object.values(blocked).filter(Boolean).length;
       
       // Une ligne droite = 2 connexions OPPOSÉES (haut-bas ou gauche-droite)
       const isStraight = 
         (connections.top && connections.bottom) || 
         (connections.left && connections.right);
-      
-      // Si on a seulement 2 vraies connexions et pas une ligne = angle
-      const isAngle = revealedCount === 2 && !isStraight;
       
       let imageName = "cul_de_sac";
       if (revealedCount === 1) {
@@ -138,6 +136,7 @@ export const initializeGame = (level: Level): GameState => {
     inventory: {},
     defeatedEnemies: [],
     clearedObstacles: [],
+    collectedItems: [],
   };
 };
 
@@ -201,25 +200,28 @@ export const handleCellClick = (
     inventory: { ...gameState.inventory },
     defeatedEnemies: [...gameState.defeatedEnemies],
     clearedObstacles: [...gameState.clearedObstacles],
+    collectedItems: [...gameState.collectedItems],
   };
 
   // Révéler la cellule cliquée
   newState.revealedCells.add(cellKey);
 
-  // Incrémenter le score
-  newState.moves += 1;
-
-  // Gérer les items
-  if (cellContent.startsWith("I:")) {
+  // Checker d'abord si c'est un item NON COLLECTÉ (ramasser sans déplacer ni compter de coup)
+  if (cellContent.startsWith("I:") && !newState.collectedItems.includes(cellKey)) {
     const itemId = cellContent.split(":")[1];
     newState.inventory[itemId] = (newState.inventory[itemId] || 0) + 1;
+    newState.collectedItems.push(cellKey);
     return newState;
   }
 
-  // Gérer les clés
+  // Incrémenter le score (seulement pour les actions qui déplacent)
+  newState.moves += 1;
+
+  // Gérer les clés (ramasser sans déplacer)
   if (cellContent.startsWith("K:")) {
     const keyId = cellContent.split(":")[1];
     newState.inventory[`key_${keyId}`] = (newState.inventory[`key_${keyId}`] || 0) + 1;
+    newState.moves -= 1;  // Ne pas compter de coup pour ramasser une clé
     return newState;
   }
 
@@ -236,15 +238,40 @@ export const handleCellClick = (
 
   // Gérer les monstres
   if (cellContent.startsWith("M:")) {
-    const enemyType = cellContent.split(":")[1];
     const key = `${targetRow}-${targetCol}`;
     
-    // Vérifier si on a une épée (pickaxe comme arme par défaut)
-    if (newState.inventory["pickaxe"] && newState.inventory["pickaxe"] > 0) {
-      newState.defeatedEnemies.push(key);
-      newState.inventory["pickaxe"] -= 1;
-      newState.playerPos = { row: targetRow, col: targetCol };
+    // Si monstre pas vaincu et on a pas d'épée: impossible
+    if (!newState.defeatedEnemies.includes(key) && (!newState.inventory["sword"] || newState.inventory["sword"] === 0)) {
+      return newState;
     }
+    
+    // Si monstre pas vaincu: utiliser l'épée (sans déplacer, sans coup)
+    if (!newState.defeatedEnemies.includes(key)) {
+      newState.defeatedEnemies.push(key);
+      newState.moves -= 1; // Annuler le coup qu'on a déjà compté
+      return newState;
+    }
+    
+    // Si monstre déjà vaincu: se déplacer
+    newState.playerPos = { row: targetRow, col: targetCol };
+    return newState;
+  }
+
+  // Gérer les items
+  if (cellContent.startsWith("I:")) {
+    const key = `${targetRow}-${targetCol}`;
+    
+    // Si item pas collecté: le ramasser (sans déplacer, sans coup)
+    if (!newState.collectedItems.includes(key)) {
+      const itemId = cellContent.split(":")[1];
+      newState.inventory[itemId] = (newState.inventory[itemId] || 0) + 1;
+      newState.collectedItems.push(key);
+      newState.moves -= 1; // Annuler le coup qu'on a déjà compté
+      return newState;
+    }
+    
+    // Si item déjà collecté: se déplacer
+    newState.playerPos = { row: targetRow, col: targetCol };
     return newState;
   }
 
@@ -264,6 +291,19 @@ export const handleCellClick = (
     }
     return newState;
   }
+
+  // Si c'est une case marchable, se déplacer
+  if (isWalkable(cellContent)) {
+    newState.playerPos = { row: targetRow, col: targetCol };
+
+    // Vérifier la victoire
+    if (targetRow === level.end.row && targetCol === level.end.col) {
+      newState.won = true;
+      newState.gameOver = true;
+    }
+  }
+
+  return newState;
 };
 
 export const getCellDisplay = (
@@ -273,7 +313,7 @@ export const getCellDisplay = (
   gameState: GameState
 ): string => {
   const cellKey = `${row}-${col}`;
-  const { playerPos, revealedCells, defeatedEnemies, clearedObstacles } = gameState;
+  const { playerPos, revealedCells, defeatedEnemies, clearedObstacles, collectedItems } = gameState;
 
   // Si le joueur est ici
   if (playerPos.row === row && playerPos.col === col) {
@@ -292,9 +332,12 @@ export const getCellDisplay = (
   if (cell === "W") return "";
   if (cell === "C") return "";
   if (cell.startsWith("M:") && !defeatedEnemies.includes(cellKey)) return "👹";
+  if (cell.startsWith("M:") && defeatedEnemies.includes(cellKey)) return "";
   if (cell.startsWith("K:")) return "🔑";
   if (cell.startsWith("D:")) return "🚪";
-  if (cell.startsWith("I:")) return "💎";
+  if (cell.startsWith("I:") && !collectedItems.includes(cellKey)) return "💎";
+  if (cell.startsWith("I:") && collectedItems.includes(cellKey)) return "";
   if (cell.startsWith("O:") && !clearedObstacles.includes(cellKey)) return "🧱";
-  return "?";
+  if (cell.startsWith("O:") && clearedObstacles.includes(cellKey)) return "";
+  return "";
 };

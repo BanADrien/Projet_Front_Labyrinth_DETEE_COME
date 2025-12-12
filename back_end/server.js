@@ -29,6 +29,7 @@
   const itemsCatalog = [
     { id: "key_red", kind: "key", color: "red", name: "Clé rouge", description: "Ouvre porte rouge", icon: "🟥" },
     { id: "key_blue", kind: "key", color: "blue", name: "Clé bleue", description: "Ouvre porte bleue", icon: "🟦" },
+    { id: "sword", kind: "weapon", name: "Épée", description: "Défait les monstres", icon: "⚔️" },
     { id: "water_bucket", kind: "item", name: "Seau d'eau", description: "Éteint le feu", icon: "🪣" },
     { id: "pickaxe", kind: "item", name: "Pioche", description: "Casse les rochers", icon: "⛏️" },
     { id: "swim_boots", kind: "item", name: "Bottes amphibies", description: "Traverse l'eau", icon: "🥾" }
@@ -88,7 +89,7 @@
         ["C","C","C","C","C","C","C","W"],
         ["C","W","W","W","W","C","C","C"],
         ["C","C","C","K:red","C","W","M:slime","C"],
-        ["W","W","C","W","D:red","C","C","C"],
+        ["W","W","C","W","D:red","I:sword","C","C"],
         ["C","C","C","C","C","C","W","C"],
         ["W","W","W","C","W","C","C","E"]
       ],
@@ -98,7 +99,8 @@
       ],
       obstacles: [],
       items: [
-        itemsCatalog.find(i => i.id === "key_red")
+        itemsCatalog.find(i => i.id === "key_red"),
+        itemsCatalog.find(i => i.id === "sword")
       ]
     },
 

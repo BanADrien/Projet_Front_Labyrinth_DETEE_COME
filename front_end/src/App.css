@@ -194,21 +194,38 @@ body{
 }
 
 .cell-key{
-  background: linear-gradient(135deg,#fcd34d,#f59e0b);
-  color:#3b2500;
+  background: transparent;
+  color: #fcd34d;
   border:0;
+  font-size: 1.5rem;
 }
 
 .cell-door{
-  background: linear-gradient(135deg,#94a3b8,#475569);
-  color:#0b0f1a;
+  background: transparent;
+  color: #94a3b8;
   border:0;
+  font-size: 1.5rem;
 }
 
 .cell-monster{
-  background: linear-gradient(135deg,#ef4444,#7f1d1d);
-  color:#ffe4e6;
+  background: transparent;
+  color: #ef4444;
   border:0;
+  font-size: 1.5rem;
+}
+
+.cell-item{
+  background: transparent;
+  color: #fcd34d;
+  border:0;
+  font-size: 1.5rem;
+}
+
+.cell-obstacle{
+  background: transparent;
+  color: #8b7355;
+  border:0;
+  font-size: 1.5rem;
 }
 
 @media (max-width:520px){
@@ -324,6 +341,83 @@ body{
 @keyframes pulse-glow {
   0%, 100% { opacity: 1; filter: drop-shadow(0 0 15px rgba(252, 211, 77, 0.6)); }
   50% { opacity: 0.95; filter: drop-shadow(0 0 25px rgba(252, 211, 77, 0.8)); }
+}
+
+/* Inventory Styling */
+.inventory-container {
+  margin-top: 20px;
+  padding: 14px 18px;
+  background: rgba(0,0,0,0.45);
+  border: 2px solid #d4a574;
+  border-radius: 8px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.inventory-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 0 8px rgba(0,0,0,0.9),
+    0 2px 6px rgba(0,0,0,0.8);
+  color: #f5d76e;
+  margin: 0 0 12px 0;
+}
+
+.inventory-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.inventory-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(212,165,116,0.2);
+  border: 1px solid #d4a574;
+  border-radius: 6px;
+  padding: 8px 12px;
+  min-width: auto;
+}
+
+.item-icon {
+  font-size: 1.5rem;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.item-name {
+  font-family: 'Pirata One', serif;
+  font-size: 0.95rem;
+  color: #f5e1b8;
+  text-shadow:
+    0 0 6px rgba(0,0,0,0.8),
+    0 2px 4px rgba(0,0,0,0.7);
+  margin: 0;
+}
+
+.item-count {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.8rem;
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.inventory-empty {
+  font-family: 'Pirata One', serif;
+  color: #a08874;
+  text-shadow:
+    0 0 4px rgba(0,0,0,0.7);
+  margin: 0;
+  font-style: italic;
 }
 
 /* small helpers */

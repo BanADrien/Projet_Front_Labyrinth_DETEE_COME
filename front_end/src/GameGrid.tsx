@@ -82,6 +82,8 @@ const GameGrid: React.FC<GameGridProps> = ({ level, gameState, onCellClick }) =>
     if (cell.startsWith("M:")) return "monster";
     if (cell.startsWith("K:")) return "key";
     if (cell.startsWith("D:")) return "door";
+    if (cell.startsWith("I:")) return "item";
+    if (cell.startsWith("O:")) return "obstacle";
     return "path";
   };
 
@@ -110,7 +112,10 @@ const GameGrid: React.FC<GameGridProps> = ({ level, gameState, onCellClick }) =>
           
           // Texture basée sur la vraie cellule, pas affectée par le joueur
           const cellContent = level.grid[rowIndex][colIndex];
-          const isPathLike = (cellContent === "C" || cellContent === "S" || cellContent === "E") && isRevealed;
+          const isPathLike = (cellContent === "C" || cellContent === "S" || cellContent === "E" ||
+                             cellContent.startsWith("M:") || cellContent.startsWith("O:") || 
+                             cellContent.startsWith("I:") || cellContent.startsWith("K:") ||
+                             cellContent.startsWith("D:")) && isRevealed;
           const pathTexture = isPathLike ? getPathTextureAndRotation(rowIndex, colIndex) : null;
 
           const classNames = [

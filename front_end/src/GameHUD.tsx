@@ -28,6 +28,8 @@ const GameHUD: React.FC<GameHUDProps> = ({ level, gameState, onReset, onNextLeve
         </div>
       </div>
 
+      <Inventory inventory={gameState.inventory} />
+
       {gameState.won && (
         <div className="victory-message">
           🎉 Victoire en {gameState.moves} coups!

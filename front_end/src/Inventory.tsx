@@ -7,6 +7,7 @@ interface InventoryProps {
 const ITEM_ICONS: { [key: string]: string } = {
   key_red: "🔴",
   key_blue: "🔵",
+  sword: "⚔️",
   pickaxe: "⛏️",
   water_bucket: "🪣",
   swim_boots: "🥾",
@@ -15,6 +16,7 @@ const ITEM_ICONS: { [key: string]: string } = {
 const ITEM_NAMES: { [key: string]: string } = {
   key_red: "Clé rouge",
   key_blue: "Clé bleue",
+  sword: "Épée",
   pickaxe: "Pioche",
   water_bucket: "Seau d'eau",
   swim_boots: "Bottes",
